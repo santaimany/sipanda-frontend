@@ -15,6 +15,13 @@
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -24,7 +31,19 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>React App</title>
+    <title>SIPANDA</title>
+    <style>
+      #map-container {
+        height: 650px;
+        margin: auto;
+        max-width: 1456px;
+        background-color: #ffffff; /* Latar belakang peta */
+        border-radius: 8px;
+
+        padding: 40px 40px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Efek bayangan ringan */
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -39,5 +58,150 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+
+    <script>
+      
+      (async () => {
+        const topology = await fetch(
+          "https://code.highcharts.com/mapdata/countries/id/id-all.geo.json"
+        ).then((response) => response.json());
+
+        const data = [
+          ["id-3700", 10],
+          ["id-ac", 20],
+          ["id-jt", 35],
+          ["id-be", 45],
+          ["id-bt", 60],
+          ["id-kb", 75],
+          ["id-bb", 25],
+          ["id-ba", 50],
+          ["id-ji", 100],
+          ["id-ks", 80],
+          ["id-nt", 15],
+          ["id-se", 55],
+          ["id-kr", 40],
+          ["id-ib", 65],
+          ["id-su", 90],
+          ["id-ri", 70],
+          ["id-sw", 85],
+          ["id-ku", 10],
+          ["id-la", 40],
+          ["id-sb", 60],
+          ["id-ma", 50],
+          ["id-nb", 35],
+          ["id-sg", 20],
+          ["id-st", 45],
+          ["id-pa", 30],
+          ["id-jr", 55],
+          ["id-ki", 75],
+          ["id-jk", 25],
+          ["id-go", 50],
+          ["id-yo", 45],
+          ["id-sl", 40],
+          ["id-sr", 15],
+          ["id-ja", 35],
+          ["id-kt", 30],
+        ];
+
+        Highcharts.mapChart("map-container", {
+          chart: {
+            map: topology,
+            backgroundColor: "#EAF8EF" /* Latar belakang peta */,
+          },
+
+          title: {
+            text: "Indeks Kelaparan Global (GHI)",
+            style: {
+              color: "#102722" /* Warna teks judul */,
+              fontSize: "18px",
+            },
+          },
+
+          subtitle: {
+            text: "Visualisasi Indeks Kelaparan di Indonesia",
+            style: {
+              color: "#102722" /* Warna teks subjudul */,
+              fontSize: "14px",
+            },
+          },
+
+          mapNavigation: {
+            enabled: true,
+            buttonOptions: {
+              verticalAlign: "bottom",
+              theme: {
+                fill: "#73b39b" /* Warna tombol navigasi */,
+                "stroke-width": 1,
+                stroke: "#ffffff",
+                r: 0,
+                states: {
+                  hover: {
+                    fill: "#4caf50",
+                  },
+                },
+              },
+            },
+          },
+
+          colorAxis: {
+            min: 0,
+            max: 100,
+            stops: [
+              [0, "#003d33"],
+              [0.2, "#16634a"],
+              [0.4, "#2c6f62"],
+              [0.6, "#4e897f"],
+              [0.8, "#73b39b"],
+              [1, "#a5dbc4"],
+            ],
+            labels: {
+              style: {
+                color: "#555555" /* Warna teks skala legenda */,
+              },
+            },
+          },
+
+          tooltip: {
+            useHTML: true,
+            formatter: function () {
+              return `
+                            <div class="tooltip-title">${this.point.name}</div>
+                            <div class="tooltip-content">
+                                <span>Persentase GHI:</span> <b>${
+                                  this.point.value || "Tidak Ada Data"
+                                }%</b>
+                            </div>
+                        `;
+            },
+          },
+
+          series: [
+            {
+              data: data,
+              name: "Indeks Kelaparan",
+              nullColor: "#d7e6dc" /* Warna wilayah tanpa data */,
+              states: {
+                hover: {
+                  color: "#4caf50" /* Warna efek hover */,
+                },
+              },
+              dataLabels: {
+                enabled: true,
+                format: "{point.name}",
+                style: {
+                  fontSize: "10px",
+                  color: "#333333" /* Warna teks data label */,
+                },
+              },
+            },
+          ],
+
+          credits: {
+            enabled: false,
+          },
+        });
+      })();
+
+    </script>
   </body>
 </html>

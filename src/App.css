@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+
+.navbarcolor {
+  background-color: (50, 122, 109, 0.9);
+}
