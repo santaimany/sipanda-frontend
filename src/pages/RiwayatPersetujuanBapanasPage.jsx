@@ -47,25 +47,28 @@ const paginate = (pageNumber) => setCurrentPage(pageNumber);
   };
 
   // Fetch rejected pengajuan
-  const fetchRejectedPengajuan = async () => {
-    setIsLoading(true);
-    const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(`${API_BASE_URL}/bapanas/pengajuan/rejected`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const result = await response.json();
-      console.log("Rejected Response", result);
-      if (result.data) {
-        setRejectedData(result.data);
-      }
-    } catch (error) {
-      console.error("Error fetching rejected pengajuan:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+ const fetchRejectedPengajuan = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await fetch(`${API_BASE_URL}/bapanas/pengajuan/rejected`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const result = await response.json();
 
+    // Log response untuk debugging
+    console.log("Rejected Response:", result);
+    console.log("API Response:", result);
+
+
+    if (result.data) {
+      setRejectedData(result.data); // Pastikan data di-set ke state
+    } else {
+      console.warn("No data found for rejected pengajuan.");
+    }
+  } catch (error) {
+    console.error("Error fetching rejected pengajuan:", error);
+  }
+};
   // Fetch data desa untuk mapping ID ke nama
   const fetchDesaData = async () => {
     const token = localStorage.getItem("token");
@@ -87,10 +90,24 @@ const paginate = (pageNumber) => setCurrentPage(pageNumber);
   };
 
   useEffect(() => {
-    fetchApprovedPengajuan();
-    fetchRejectedPengajuan();
-    fetchDesaData();
-  }, []);
+    const fetchData = async () => {
+      fetchDesaData();
+      setIsLoading(true);
+      try {
+        if (activeTab === "approved") {
+          await fetchApprovedPengajuan();
+        } else if (activeTab === "rejected") {
+          await fetchRejectedPengajuan();
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [activeTab]);
 
   const renderPengajuanTable = (data) => {
     // Pagination
@@ -204,12 +221,7 @@ const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fffdfa]">
-       {isLoading ? (
-     <div className="flex justify-center min-h-screen items-center mt-4">
-     <div className="loader "></div>
-   </div>
-    ) : (
-      <>
+   
       <NavbarBapanas title="Riwayat Persetujuan" />
       <div className="flex flex-1">
         <SidebarBapanas />
@@ -241,11 +253,7 @@ const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
           {/* Tabel Riwayat */}
           <div className="bg-white shadow rounded-lg p-4">
-            {isLoading ? (
-        <div className="flex justify-center items-center mt-4">
-        <div className="loader"></div>
-      </div>
-            ) : activeTab === "approved" ? (
+            { activeTab === "approved" ? (
               renderPengajuanTable(approvedData)
             ) : (
               renderPengajuanTable(rejectedData)
@@ -253,8 +261,8 @@ const paginate = (pageNumber) => setCurrentPage(pageNumber);
           </div>
         </main>
       </div>
-      </>
-    )}
+     
+   
     </div>
   );
 };
