@@ -241,6 +241,14 @@ const RiwayatPengajuanPage = () => {
             <td className="font-semibold">Total Harga</td>
             <td className="text-right">{selectedDetail.total_harga}</td>
           </tr>
+          {selectedDetail.status === "rejected" && (
+            <tr>
+              <td className="font-semibold text-red-600">Alasan Penolakan</td>
+              <td className="text-right text-red-600">
+                {selectedDetail.alasan || "Tidak ada alasan tersedia."}
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
       <div className="flex items-center justify-between">

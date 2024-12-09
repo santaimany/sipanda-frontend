@@ -4,6 +4,7 @@ import Logo from "../assets/Group 1883.png";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import FormpageIlustrasi from "../assets/formpage-ilustrasi.png";
+import { toast } from "react-toastify";
 
 const PengajuanFormPage = () => {
   const location = useLocation();
@@ -86,10 +87,13 @@ const PengajuanFormPage = () => {
 
   const handleSubmitPengajuan = async () => {
     if (!invoiceData) {
-      setErrorMessage("Isi data terlebih dahulu untuk menampilkan invoice.");
+      toast.error("Isi data terlebih dahulu untuk menampilkan invoice.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       return;
     }
-
+  
     setLoadingInvoice(true);
     try {
       const response = await fetch(
@@ -109,17 +113,26 @@ const PengajuanFormPage = () => {
           }),
         }
       );
-
+  
       const result = await response.json();
       if (response.ok) {
-        alert(result.message);
-        navigate("/dashboard/kepala-desa");
+        toast.success(result.message, {
+          position: "top-right",
+          autoClose: 3000,
+          onClose: () => navigate("/dashboard/kepala-desa"),
+        });
       } else {
-        setErrorMessage(result.message || "Terjadi kesalahan.");
+        toast.error(result.message || "Terjadi kesalahan.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
       }
     } catch (error) {
       console.error("Error:", error);
-      setErrorMessage("Terjadi kesalahan saat mengajukan pengajuan.");
+      toast.error("Terjadi kesalahan saat mengajukan pengajuan.", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     } finally {
       setLoadingInvoice(false);
     }
@@ -263,10 +276,26 @@ const PengajuanFormPage = () => {
           </div>
 
           {errorMessage && (
-            <div className="bg-red-100 text-red-600 p-4 rounded-lg mt-4">
-              {errorMessage}
-            </div>
-          )}
+  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
+    <strong className="font-bold">Error: </strong>
+    <span className="block sm:inline">{errorMessage}</span>
+    <button
+      onClick={() => setErrorMessage("")}
+      className="absolute top-0 bottom-0 right-0 px-4 py-3"
+    >
+      <svg
+        className="fill-current h-6 w-6 text-red-500"
+        role="button"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+      >
+        <title>Close</title>
+        <path d="M14.348 14.849a1 1 0 11-1.414 1.415L10 11.414l-2.933 2.934a1 1 0 01-1.415-1.415L8.586 10 5.653 7.067a1 1 0 011.415-1.415L10 8.586l2.933-2.934a1 1 0 011.414 1.415L11.414 10l2.934 2.933z" />
+      </svg>
+    </button>
+  </div>
+)}
+
         </main>
       </div>
     </div>

@@ -7,6 +7,9 @@ import "./index.css";
 import './App.css';  
 // index.js atau App.js
 import 'leaflet/dist/leaflet.css';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 import CheckStatusPage from "./pages/CheckStatusPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -25,11 +28,14 @@ import LandingPage from "./pages/LandingPage";
 import DashboardAdmin from "./pages/DashboardAdminPage";
 import LogoutAdmin from "./pages/LogoutAdmin";
 import SettingsBapanas from "./pages/SettingsBapanas";
+import { ToastContainer } from "react-toastify";
 
 
 const App = () => {
   return (
     <Router>
+      <div >
+        <ToastContainer />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -56,6 +62,7 @@ const App = () => {
 <Route path="/logout/admin" element={<LogoutAdmin />} />
 
       </Routes>
+      </div>
     </Router>
   );
 };

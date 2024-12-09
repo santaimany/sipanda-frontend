@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import DekorasiAtas from "../assets/Group 1000005180.png"; // Gambar dekorasi atas
 import Logo from "../assets/Group 1000005175.png"; // Logo
 import PenyiramTanaman from "../assets/pexels-enric-cruz-lopez-6039237.jpg"; // Background kanan
+import { toast } from "react-toastify";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -32,16 +33,14 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMessage("");
 
     if (formData.password !== formData.passwordConfirmation) {
-      setErrorMessage("Password dan Password Confirmation harus sama.");
+      toast.error("Password dan Konfirmasi Password harus sama.");
       setLoading(false);
       return;
     }
 
     try {
-      // STEP 1: Mendaftar pengguna baru
       const response = await fetch(
         "https://sipanda-production.up.railway.app/api/register/identity/",
         {
@@ -63,28 +62,26 @@ const RegisterPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // STEP 2: Jika role adalah "kepala_desa", arahkan ke halaman registrasi desa
+        toast.success(data.message || "Registrasi berhasil!");
         if (formData.role === "kepala_desa") {
           navigate(`/register/kepala-desa/${data.data.id}`);
         } else {
-          // Jika bukan kepala desa, langsung selesai
-          alert(data.message);
           navigate("/check-status");
         }
       } else {
-        // Menampilkan pesan error dari server
         if (data.errors) {
-          setErrorMessage(data.errors.email?.[0] || data.message);
+          toast.error(data.errors.email?.[0] || data.message);
         } else {
-          setErrorMessage(data.message);
+          toast.error(data.message || "Registrasi gagal.");
         }
       }
     } catch (error) {
-      setErrorMessage("Terjadi kesalahan pada server. Silakan coba lagi nanti.");
+      toast.error("Terjadi kesalahan pada server. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="flex flex-wrap w-full min-h-screen font-poppins">

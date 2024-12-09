@@ -207,15 +207,23 @@ const DashboardPage = () => {
       console.error("Error marking notification as read:", error);
     }
   };
-
   const initializePieChart = (labels, data) => {
-    if (!labels || !Array.isArray(labels) || labels.length === 0 || 
-        !data || !Array.isArray(data) || data.length === 0) {
-      console.warn("Pie chart data is invalid:", { labels, data });
-      return; // Jangan melanjutkan jika data tidak valid
+    if (!pieChartRef.current) {
+      console.warn("Canvas element is not ready. Retrying...");
+      setTimeout(() => initializePieChart(labels, data), 100); // Coba lagi setelah 100ms
+      return;
     }
   
-    if (chartInstanceRef.current) chartInstanceRef.current.destroy();
+    if (!labels?.length || !data?.length) {
+      console.warn("Pie chart data is missing or invalid:", { labels, data });
+      return;
+    }
+  
+    console.log("Initializing pie chart with data:", { labels, data });
+  
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.destroy();
+    }
   
     chartInstanceRef.current = new Chart(pieChartRef.current, {
       type: "pie",
@@ -238,6 +246,8 @@ const DashboardPage = () => {
       },
     });
   };
+  
+  
   
 
   const initializeCalendar = (date) => {
@@ -268,7 +278,13 @@ const DashboardPage = () => {
         currentPage * itemsPerPage
       )
     : [];
-  
+    useEffect(() => {
+      // Jika data tersedia, inisialisasi pie chart
+      if (pieChartData.labels.length > 0 && pieChartData.data.length > 0) {
+        initializePieChart(pieChartData.labels, pieChartData.data);
+      }
+    }, [pieChartData]);
+    
 
   const renderPagination = () => {
 
@@ -465,8 +481,13 @@ const DashboardPage = () => {
               )}
                 </div>
                 <div className="col-span-1 flex justify-center">
-                  <canvas ref={pieChartRef} style={{ maxWidth: "350px", maxHeight: "350px" }}></canvas>
-                </div>
+  {pieChartData.labels.length > 0 && pieChartData.data.length > 0 ? (
+    <canvas ref={pieChartRef} style={{ maxWidth: "350px", maxHeight: "350px" }}></canvas>
+  ) : (
+    <p className="text-gray-500">Data statistik belum tersedia.</p>
+  )}
+</div>
+
                 <p className="text-white col-start-2 text-xs text-center mt-4">
                   *Data statistik bisa berubah <br />
                   sesuai pembaruan dari bapanas

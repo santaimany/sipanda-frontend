@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import NavbarBapanas from "../components/NavbarBapanas";
 import SidebarBapanas from "../components/SidebarBapanas";
 import UpdateIcon from "../assets/icons/update-icon.svg";
+import { toast } from "react-toastify";
 
 const DetailPanganBapanasPage = () => {
   const [dataPangan, setDataPangan] = useState([]);
@@ -24,13 +25,17 @@ const DetailPanganBapanasPage = () => {
       const response = await fetch(`${API_BASE_URL}/detail-pangan`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const result = await response.json();
+      const result = await response.json();   
       if (result.success) {
         setDataPangan(result.data);
         setFilteredData(result.data);
+        console.log("Data berhasil dimuat.");
+      } else {
+        toast.warn(result.message || "Gagal memuat data.");
       }
     } catch (error) {
       console.error("Error fetching detail pangan:", error);
+      toast.error("Terjadi kesalahan saat memuat data.");
     } finally {
       setIsLoading(false);
     }
@@ -49,11 +54,16 @@ const DetailPanganBapanasPage = () => {
         body: JSON.stringify({ harga: editPangan.harga }),
       });
       const result = await response.json();
-      alert(result.message || "Harga berhasil diupdate.");
-      setShowPopup(false);
-      fetchDetailPangan();
+      if (response.ok) {
+        toast.success(result.message || "Harga berhasil diupdate.");
+        setShowPopup(false);
+        fetchDetailPangan();
+      } else {
+        toast.warn(result.message || "Gagal mengupdate harga.");
+      }
     } catch (error) {
       console.error("Error updating harga:", error);
+      toast.error("Terjadi kesalahan saat mengupdate harga.");
     }
   };
 

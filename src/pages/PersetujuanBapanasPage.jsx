@@ -3,6 +3,7 @@ import NavbarBapanas from "../components/NavbarBapanas";
 import SidebarBapanas from "../components/SidebarBapanas";
 import SetujuIcon from "../assets/icons/setuju-icon.svg";
 import TolakIcon from "../assets/icons/reject-icon.svg";
+import { toast } from "react-toastify";
 const PersetujuanBapanasPage = () => {
   const [pengajuanData, setPengajuanData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +29,7 @@ const PersetujuanBapanasPage = () => {
       }
     } catch (error) {
       console.error("Error fetching pengajuan data:", error);
+      toast.error("Gagal memuat data pengajuan.");
     } finally {
       setIsLoading(false);
     }
@@ -50,6 +52,7 @@ const PersetujuanBapanasPage = () => {
       }
     } catch (error) {
       console.error("Error fetching desa data:", error);
+      toast.error("Gagal memuat data desa.");
     }
   };
 
@@ -65,10 +68,11 @@ const PersetujuanBapanasPage = () => {
         setDetailPengajuan(result.data);
         setShowDetailPopup(true);
       } else {
-        alert(result.message || "Detail pengajuan tidak ditemukan.");
+        toast.error(result.message || "Detail pengajuan tidak ditemukan.");
       }
     } catch (error) {
       console.error("Error fetching detail pengajuan:", error);
+      toast.error("Terjadi kesalahan saat memuat detail pengajuan.");
     }
   };
 
@@ -81,10 +85,15 @@ const PersetujuanBapanasPage = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const result = await response.json();
-      alert(result.message || "Pengajuan berhasil disetujui.");
-      fetchPengajuanData();
+      if (response.ok) {
+        toast.success(result.message || "Pengajuan berhasil disetujui.");
+        fetchPengajuanData();
+      } else {
+        toast.error(result.message || "Gagal menyetujui pengajuan.");
+      }
     } catch (error) {
       console.error("Error approving pengajuan:", error);
+      toast.error("Terjadi kesalahan saat menyetujui pengajuan.");
     }
   };
 
@@ -94,7 +103,7 @@ const PersetujuanBapanasPage = () => {
     const { id, alasan } = rejectForm;
 
     if (!alasan) {
-      alert("Harap isi alasan penolakan.");
+      toast.warn("Harap isi alasan penolakan.");
       return;
     }
 
@@ -108,11 +117,16 @@ const PersetujuanBapanasPage = () => {
         body: JSON.stringify({ alasan }),
       });
       const result = await response.json();
-      alert(result.message || "Pengajuan berhasil ditolak.");
-      setShowRejectPopup(false);
-      fetchPengajuanData();
+      if (response.ok) {
+        toast.success(result.message || "Pengajuan berhasil ditolak.");
+        setShowRejectPopup(false);
+        fetchPengajuanData();
+      } else {
+        toast.error(result.message || "Gagal menolak pengajuan.");
+      }
     } catch (error) {
       console.error("Error rejecting pengajuan:", error);
+      toast.error("Terjadi kesalahan saat menolak pengajuan.");
     }
   };
 
@@ -158,8 +172,8 @@ const PersetujuanBapanasPage = () => {
                   <tr key={ajuan.id} className="border-b">
                     <td className="border px-4 py-2 text-center">{index + 1}</td>
                     <td className="border px-4 py-2">
-                      {`Asal: ${desaMap[ajuan.desa_asal_id] || "Loading..."}, Tujuan: ${
-                        desaMap[ajuan.desa_tujuan_id] || "Loading..."
+                      {`Asal: ${desaMap[ajuan.desa_tujuan_id] || "Loading..."}, Tujuan: ${
+                        desaMap[ajuan.desa_asal_id] || "Loading..."
                       }`}
                     </td>
                     <td className="border px-4 py-2 text-center">{ajuan.jenis_pangan}</td>
@@ -257,8 +271,8 @@ const PersetujuanBapanasPage = () => {
             <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
               <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
                 <h3 className="text-xl font-bold mb-4">Detail Pengajuan</h3>
-                <p><strong>Desa Pengirim:</strong> {detailPengajuan.desa_pengirim}</p>
-                <p><strong>Desa Penerima:</strong> {detailPengajuan.desa_penerima}</p>
+                <p><strong>Desa Pengirim:</strong> {detailPengajuan.desa_penerima}</p>
+                <p><strong>Desa Penerima:</strong> {detailPengajuan.desa_pengirim}</p>
                 <p><strong>Jenis Pangan:</strong> {detailPengajuan.jenis_pangan}</p>
                 <p><strong>Berat:</strong> {detailPengajuan.berat}</p>
                 <p><strong>Harga per Kg:</strong> {detailPengajuan.harga_per_kg}</p>

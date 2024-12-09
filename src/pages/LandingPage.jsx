@@ -40,6 +40,8 @@ import Akses from "../assets/icons/aksesibilitas.svg";
 import Realtime from "../assets/icons/realtime.svg";
 import Pendataan from "../assets/icons/data.svg";
 import Transparansi from "../assets/icons/transparansi.svg";
+import emailjs from 'emailjs-com';
+import { ToastContainer, toast } from 'react-toastify';
 
 // Data peta Indonesia
 
@@ -51,6 +53,30 @@ if (typeof HighchartsMap === "function") {
 if (typeof Exporting === "function") {
   Exporting(Highcharts);
 }
+
+const sendEmail = (e) => {
+  e.preventDefault();
+
+
+  const name = e.target.from_name.value.trim();
+  const telp = e.target.telp.value.trim();
+  const email = e.target.email.value.trim();
+  const message = e.target.message.value.trim();
+
+
+  if (!name || !message || !telp || !email) {
+      toast.error('Please fill in all fields.');
+      return;
+  }
+
+
+  emailjs.sendForm('service_p1jgk4s', 'template_qwqznrj', e.target, 'JewSNR4BP_EIFIL4J')
+      .then((result) => {
+          toast.success('Email has been sent successfully!');
+      }, (error) => {
+          toast.error('Failed to send email: ' + error.text);
+      });
+};
 
 
 const AnimatedText = ({ text }) => {
@@ -332,10 +358,8 @@ const LandingPage = () => {
   };
 
   const text = [
-    "Kami percaya bahwa setiap sistem yang sukses didukung oleh tim yang solid dan berdedikasi.",
-    "Di sini, Anda dapat mengenal anggota tim kami yang menjadi motor penggerak di balik SIPANDA.","Dengan pengalaman dan komitmen yang kami miliki,",
-    "Kami bertekad untuk mendukung pengelolaan pangan yang lebih baik di setiap daerah.",
-    "Jangan ragu untuk menghubungi kami melalui tombol di bawah ini.",
+    "Kami percaya bahwa setiap sistem yang sukses didukung oleh tim yang solid dan berdedikasi. Di sini, Anda dapat mengenal anggota tim kami yang menjadi motor penggerak di balik SIPANDA.","Dengan pengalaman dan komitmen yang kami miliki,",
+    "Kami bertekad untuk mendukung pengelolaan pangan yang lebih baik di setiap daerah. Jangan ragu untuk menghubungi kami melalui tombol di bawah ini.",
     "Kami siap membantu Anda kapan saja!",
   ];
 
@@ -430,20 +454,34 @@ const LandingPage = () => {
       (prevIndex) => (prevIndex - 1 + slides.length) % slides.length
     );
   };
-
   useEffect(() => {
     const swiperWrapper = document.querySelector(".swiper-wrapper");
     const slides = Array.from(swiperWrapper.children);
     const nextButton = document.querySelector(".swiper-button-next");
     const prevButton = document.querySelector(".swiper-button-prev");
-
+  
     let currentIndex = 0;
-
+  
+    // Set style untuk tombol navigasi
+    nextButton.style.backgroundColor = "transparent"; // Tombol berwarna hitam
+    nextButton.style.color = "black"; // Teks tombol berwarna putih
+    nextButton.style.border = "none";
+    nextButton.style.padding = "10px 15px";
+    nextButton.style.borderRadius = "5px";
+    nextButton.style.cursor = "pointer";
+  
+    prevButton.style.backgroundColor = "transparent"; // Tombol berwarna hitam
+    prevButton.style.color = "black"; // Teks tombol berwarna putih
+    prevButton.style.border = "none";
+    prevButton.style.padding = "10px 15px";
+    prevButton.style.borderRadius = "5px";
+    prevButton.style.cursor = "pointer";
+  
     function updateSlides() {
       swiperWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
       swiperWrapper.style.transition = "transform 0.3s ease-in-out";
     }
-
+  
     nextButton.addEventListener("click", () => {
       if (currentIndex < slides.length - 1) {
         currentIndex++;
@@ -453,7 +491,7 @@ const LandingPage = () => {
         updateSlides();
       }
     });
-
+  
     prevButton.addEventListener("click", () => {
       if (currentIndex > 0) {
         currentIndex--;
@@ -463,12 +501,15 @@ const LandingPage = () => {
         updateSlides();
       }
     });
-
+  
     return () => {
+      // Cleanup event listeners
       nextButton.removeEventListener("click", updateSlides);
       prevButton.removeEventListener("click", updateSlides);
     };
   }, []);
+  
+  
 
   function Card({ name, title, text, image }) {
     return (
@@ -758,20 +799,22 @@ const LandingPage = () => {
     <div className="grid grid-cols-3 grid-rows-3 grid-flow-col gap-y-10">
        
       <div
-        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] text-center flex items-center justify-center opacity-0 translate-y-10"
+        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] text-center flex items-center justify-center opacity-0 translate-y-10 space-x-2"
       >
          <img src={Peta } alt="Peta" />
 
-        Peta Index GHI
+       <p>Peta Index GHI</p> 
       </div>
       <div
-        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] text-center flex items-center justify-center opacity-0 translate-y-10"
-      >
+        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] text-center flex items-center justify-center  opacity-0 translate-y-10 space-x-2"
+      > 
+
+
         <img src={Dashboard} alt="Dashboard" />
-        Dashboard yang Interaktif dan Responsif
+        <p>Dashboard yang <br></br>Interaktif dan Responsif</p>
       </div>
       <div
-        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] text-center flex items-center justify-center opacity-0 translate-y-10"
+        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] text-center flex items-center justify-center opacity-0 translate-y-10 space-x-2"
       >
         <img src={Akses} alt="Akses" />
         Aksesibilitas Pengajuan
@@ -780,19 +823,19 @@ const LandingPage = () => {
         <img src={Fitur} alt="Fitur Gambar" />
       </div>
       <div
-        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] place-self-end text-center flex items-center justify-center opacity-0 translate-y-10"
+        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] place-self-end text-center flex items-center justify-center opacity-0 translate-y-10 space-x-2"
       >
         <img src={Realtime} alt="Realtime" />
         Real Time Data
       </div>
       <div
-        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] place-self-end text-center flex items-center justify-center opacity-0 translate-y-10"
+        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] place-self-end text-center flex items-center justify-center opacity-0 translate-y-10 space-x-2"
       >
         <img src={Pendataan} alt="Pendataan" />
         Pendataan Akurat
       </div>
       <div
-        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] place-self-end text-center flex items-center justify-center opacity-0 translate-y-10"
+        className="feature-card bg-cover bg-center bg-no-repeat bg-[#EAF8EF] rounded-md h-[200px] w-[300px] place-self-end text-center flex items-center justify-center opacity-0 translate-y-10 space-x-2"
       >
         <img src={Transparansi} alt="Transparansi" />
         Transparansi
@@ -811,36 +854,65 @@ const LandingPage = () => {
         <h1 className="font-bold text-3xl mb-6 text-[#102722]">
           TEMUKAN TIM HEBAT KAMI
         </h1>
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2 tracking-tight">
           {text.map((text, index) => (
             <AnimatedText key={index} text={text} />
           ))}
         </div>
+        <button className="mt-4 bg-[#327A6D]  hover:bg-[#a7dbd1] tracking-widest hover:text-black text-white  font-bold outline outline-1  transition-all duration-300 ease-in-out px-2 py-2 rounded-lg">📞 Hubungi Kami</button>
       </div>
       {/* Lingkaran Gambar dengan Efek */}
-      <div className="grid grid-cols-3 gap-10">
-        {[
-          { image: Santa, name: "Santa", role: "Fullstack Developer" },
-          { image: Itsar, name: "Itsar", role: "Backend Developer" },
-          { image: Arman, name: "Arman", role: "UI/UX Designer" },
-          { image: Pram, name: "Pram", role: "UI/UX Analyst" },
-          { image: Ijan, name: "Ijan", role: "Frontend Developer" },
-        ].map((member, index) => (
-          <div
-            key={index}
-            ref={(el) => (circlesRef.current[index] = el)}
-            className={`circle w-full h-64 bg-center bg-cover bg-no-repeat rounded-3xl shadow-lg transition-all duration-300 ease-in-out ${
-              activeCircleIndex === index ? "active-circle " : ""
-            }`}
-            style={{ backgroundImage: `url(${member.image})` }}
-          >
-            <div className="overlay">
-              <h3 className="text-lg font-bold">{member.name}</h3>
-              <p className="text-sm font-light">{member.role}</p>
-            </div>
-          </div>
-        ))}
+      <div className="grid grid-cols-3 grid-rows-3">
+  {[
+    { image: Santa, name: "Santa", role: "Fullstack Developer" },
+    { image: Itsar, name: "Itsar", role: "Backend Developer" },
+    { image: Arman, name: "Arman", role: "UI/UX Designer" },
+    { image: Pram, name: "Pram", role: "UI/UX Analyst" },
+    { image: Ijan, name: "Ijan", role: "Frontend Developer" },
+  ].map((member, index) => {
+    let gridClasses = ""; // Menentukan posisi grid berdasarkan nama
+    
+    switch (member.name) {
+      case "Santa":
+        gridClasses = "col-start-1";
+        break;
+      case "Itsar":
+        gridClasses = "col-start-3";
+        break;
+      case "Arman":
+        gridClasses = "col-start-2 ";
+        break;
+      case "Ijan":
+        gridClasses = "col-start-1 row-start-3";
+        break;
+      case "Pram":
+        gridClasses = "col-start-3 row-start-3";
+        break;
+      default:
+        gridClasses = "col-span-1";
+    }
+
+    return (
+      <div
+        key={index}
+        ref={(el) => (circlesRef.current[index] = el)}
+        className={`w-full h-64 circle bg-center bg-cover bg-no-repeat rounded-3xl shadow-lg transition-all duration-300 ease-in-out ${gridClasses}`}
+        style={{
+          backgroundImage: `url(${member.image})`,
+        }}
+      >
+        <div className="overlay">
+          <h3 className="text-md font-bold">{member.name}</h3>
+          <p className="text-xs font-light">{member.role}</p>
+        </div>
       </div>
+    );
+  })}
+</div>
+
+
+
+
     </div>
   </div>
 </section>
@@ -893,13 +965,13 @@ const LandingPage = () => {
                 <Card
                   name="Suhardi B"
                   title="Kades Tompo"
-                  text="“SIPANDA memberikan perubahan besar bagi pengelolaan pangan di desa kami. Dengan data yang selalu diperbarui, kami dapat dengan mudah mengidentifikasi kebutuhan pangan di masyarakat. Informasi harga dan distribusi yang sebelumnya sulit dijangkau kini lebih mudah dipahami, membantu kami mengambil langkah yang lebih strategis dalam menjaga ketahanan pangan desa. Saya yakin bahwa SIPANDA akan menjadi bagian penting dari perencanaan pangan di masa depan.”"
+                  text="“SIPANDA memberikan perubahan besar bagi pengelolaan pangan di desa kami. Dengan data yang selalu diperbarui, kami dapat dengan mudah mengidentifikasi kebutuhan pangan di masyarakat. Informasi harga dan distribusi yang sebelumnya sulit dijangkau kini lebih mudah dipahami. Saya yakin bahwa SIPANDA akan menjadi bagian penting dari perencanaan pangan di masa depan.”"
                   image={Kades2}
                 />
                 <Card
                   name="Muhammad Ilyas"
                   title="Kades Lowokwaru"
-                  text="“SIPANDA menghadirkan itu dengan sangat baik. Sebagai Kepala Desa, saya dapat memastikan bahwa setiap keputusan yang diambil terkait pangan berdasarkan data yang akurat dan terkini. Ini memberi kami kepercayaan diri dalam mengelola sumber daya pangan dengan lebih baik. SIPANDA tidak hanya mempermudah pekerjaan kami, tetapi juga memberi rasa aman bagi masyarakat karena mereka tahu bahwa informasi yang ada dapat diandalkan.”"
+                  text="“Sebagai Kepala Desa, saya dapat memastikan bahwa setiap keputusan yang diambil terkait pangan berdasarkan data yang akurat dan terkini. Ini memberi kami kepercayaan diri dalam mengelola sumber daya pangan dengan lebih baik. SIPANDA tidak hanya mempermudah pekerjaan kami, tetapi juga memberi rasa aman bagi masyarakat karena mereka tahu bahwa informasi yang ada dapat diandalkan.”"
                   image={Kades3}
                 />
               </div>
@@ -974,24 +1046,35 @@ const LandingPage = () => {
           </span>
           <div className="flex gap-10 place-items-center">
             <div className="bg-[#EAF8EF] rounded-lg p-4 shadow-2xl h-fit flex-1">
-              <form className="grid grid-cols-2 gap-4">
+              <form className="grid grid-cols-2 gap-4" onSubmit={sendEmail} >
                 <input
+                  name="from_name"
                   className="bg-white p-2 rounded-md"
                   placeholder="Nama Depan"
                 />
                 <input
+                  name="telp"
                   className="bg-white p-2 rounded-md"
-                  placeholder="Nama Belakang"
+                  placeholder="Nomor Telepon"
                 />
                 <input
+                  name="email"
                   className="col-span-2 bg-white p-2 rounded-md"
                   placeholder="Email"
                 />
                 <textarea
+                  name="message"
                   className="col-span-2 bg-white p-2 rounded-md h-[200px]"
                   placeholder="Write Your Message"
                   defaultValue={""}
                 />
+                  <button
+                            type="submit"
+                            className="mt-6 bg-black hover:bg-[#CAF0F8] text-white hover:text-black font-semibold py-2 px-4 rounded-full transition duration-300 ease-in-out outline outline-1"
+                        >
+                            Kirim Pesan
+                        </button>
+                        <ToastContainer />
               </form>
             </div>
             <img src={Kontak}  className="flex-1" />

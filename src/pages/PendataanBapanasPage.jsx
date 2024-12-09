@@ -3,6 +3,7 @@ import NavbarBapanas from "../components/NavbarBapanas";
 import SidebarBapanas from "../components/SidebarBapanas";
 import Updateicon from "../assets/icons/update-icon.svg";
 import Deleteicon from "../assets/icons/delete-icon.svg";
+import { toast } from "react-toastify";
 
 const PendataanBapanasPage = () => {
   const [desaData, setDesaData] = useState([]);
@@ -17,6 +18,7 @@ const PendataanBapanasPage = () => {
 
   const API_BASE_URL = "https://sipanda-production.up.railway.app/api";
 
+ 
   const fetchDesaData = async () => {
     setIsLoading(true);
     const token = localStorage.getItem("token");
@@ -30,6 +32,7 @@ const PendataanBapanasPage = () => {
       }
     } catch (error) {
       console.error("Error fetching desa data:", error);
+      toast.error("Gagal memuat data desa.");
     } finally {
       setIsLoading(false);
     }
@@ -47,6 +50,7 @@ const PendataanBapanasPage = () => {
       }
     } catch (error) {
       console.error("Error fetching jenis pangan data:", error);
+      toast.error("Gagal memuat data jenis pangan.");
     }
   };
 
@@ -69,13 +73,16 @@ const PendataanBapanasPage = () => {
         body: JSON.stringify(formMode === "insert" ? newPangan : editPangan),
       });
       const result = await response.json();
-      if (result.message) {
-        alert(result.message);
+      if (response.ok) {
+        toast.success(result.message || "Data berhasil disimpan.");
         fetchDesaData();
         setShowForm(false);
+      } else {
+        toast.error(result.message || "Gagal menyimpan data.");
       }
     } catch (error) {
       console.error("Error adding/updating pangan:", error);
+      toast.error("Terjadi kesalahan saat menyimpan data.");
     } finally {
       setIsLoading(false);
     }
@@ -90,12 +97,15 @@ const PendataanBapanasPage = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const result = await response.json();
-      if (result.message) {
-        alert(result.message);
+      if (response.ok) {
+        toast.success(result.message || "Data berhasil dihapus.");
         fetchDesaData();
+      } else {
+        toast.error(result.message || "Gagal menghapus data.");
       }
     } catch (error) {
       console.error("Error deleting pangan:", error);
+      toast.error("Terjadi kesalahan saat menghapus data.");
     } finally {
       setIsLoading(false);
     }
@@ -195,7 +205,7 @@ const PendataanBapanasPage = () => {
                                 ))}
                               </tbody>
                             </table>
-                            <div className="flex justify-end">\
+                            <div className="flex justify-end">
                             <button
                               className="mt-4 bg-[#327A6D]  hover:bg-[#a7dbd1] hover:text-black   outline-black outline outline-1 font-medium  transition-all duration-300 ease-in-out text-white px-4 py-2 rounded"
                               onClick={() => {
